@@ -21,7 +21,7 @@ class _TextScreen extends ConsumerState<TextScreen> {
   stt.SpeechToText _speech = stt.SpeechToText();
   bool _isListening = false;
   String _recognizedText = '';
-
+  String _voiceText = "";
   @override
   void initState() {
     super.initState();
@@ -45,18 +45,14 @@ class _TextScreen extends ConsumerState<TextScreen> {
     }
   }
 
-  void _startListening(TextEditingController controller) async {
-    if (!_isListening) {
-      setState(() {
-        _isListening = true;
-        _recognizedText = '';
-      });
-
-      _speech.listen(
+  void _startListening() async {
+    if (_speech.isNotListening) {
+      await _speech.listen(
         onResult: (result) {
+          print(result.recognizedWords);
           setState(() {
             _recognizedText = result.recognizedWords;
-            controller.text = _recognizedText;
+            ingredientsController.text = _recognizedText;
           });
         },
       );
@@ -64,7 +60,7 @@ class _TextScreen extends ConsumerState<TextScreen> {
   }
 
   void _stopListening() async {
-    if (_isListening) {
+    if (_speech.isListening) {
       await _speech.stop();
       setState(() => _isListening = false);
     }
@@ -72,6 +68,8 @@ class _TextScreen extends ConsumerState<TextScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var _changedValue;
+    var _changedValue2;
     TextInput input_data = TextInput();
     return Scaffold(
       appBar: AppBar(
@@ -122,10 +120,10 @@ class _TextScreen extends ConsumerState<TextScreen> {
                             ),
                             IconButton(
                               onPressed: () {
-                                if (_isListening) {
+                                if (_speech.isListening) {
                                   _stopListening();
                                 } else {
-                                  _startListening(ingredientsController);
+                                  _startListening();
                                 }
                               },
                               icon: AvatarGlow(
@@ -141,10 +139,6 @@ class _TextScreen extends ConsumerState<TextScreen> {
                               ),
                             ),
                           ],
-                        ),
-                        Text(
-                          ingredientsController.text,
-                          style: TextStyle(fontSize: 16),
                         ),
                       ],
                     ),
@@ -166,22 +160,23 @@ class _TextScreen extends ConsumerState<TextScreen> {
                           title: Text("Select Diet"),
                         ),
                         DropdownButton(
-                          hint: Text('Select Cuisine'),
-                          isExpanded: true,
-                          items: Diet.values
-                              .map(
-                                (e) => DropdownMenuItem(
-                                  value: e,
-                                  child: Text(e.toString().split('.').last),
-                                ),
-                              )
-                              .toList(),
-                          onChanged: (value) {
-                            setState(() {
-                              input_data.diet = value.toString();
-                            });
-                          },
-                        ),
+                            hint: Text('Select Cuisine'),
+                            isExpanded: true,
+                            items: Diet.values
+                                .map(
+                                  (e) => DropdownMenuItem(
+                                    value: e,
+                                    child: Text(e.toString().split('.').last),
+                                  ),
+                                )
+                                .toList(),
+                            onChanged: (value) {
+                              setState(() {
+                                _changedValue = value;
+                                input_data.diet = value.toString();
+                              });
+                            },
+                            value: _changedValue),
                       ],
                     ),
                   ),
@@ -202,22 +197,23 @@ class _TextScreen extends ConsumerState<TextScreen> {
                           title: Text("Select Course"),
                         ),
                         DropdownButton(
-                          hint: Text('Select Course'),
-                          isExpanded: true,
-                          items: Course.values
-                              .map(
-                                (e) => DropdownMenuItem(
-                                  value: e,
-                                  child: Text(e.toString().split('.').last),
-                                ),
-                              )
-                              .toList(),
-                          onChanged: (value) {
-                            setState(() {
-                              input_data.course = value.toString();
-                            });
-                          },
-                        ),
+                            hint: Text('Select Course'),
+                            isExpanded: true,
+                            items: Course.values
+                                .map(
+                                  (e) => DropdownMenuItem(
+                                    value: e,
+                                    child: Text(e.toString().split('.').last),
+                                  ),
+                                )
+                                .toList(),
+                            onChanged: (value) {
+                              setState(() {
+                                _changedValue2 = value;
+                                input_data.course = value.toString();
+                              });
+                            },
+                            value: _changedValue2),
                       ],
                     ),
                   ),
