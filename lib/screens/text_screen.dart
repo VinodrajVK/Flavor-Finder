@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flavor_finder/models/text_input.dart';
 import 'package:flavor_finder/screens/recipe_list_screen.dart';
@@ -23,7 +21,6 @@ class _TextScreen extends ConsumerState<TextScreen> {
   stt.SpeechToText _speech = stt.SpeechToText();
   bool _isListening = false;
   String _recognizedText = '';
-  TextEditingController? _activeController;
 
   @override
   void initState() {
@@ -50,42 +47,26 @@ class _TextScreen extends ConsumerState<TextScreen> {
 
   void _startListening(TextEditingController controller) async {
     if (!_isListening) {
-      bool available = await _speech.initialize(
-        onStatus: (status) {
-          print('Speech recognition status: $status');
-        },
-        onError: (error) {
-          print('Speech recognition error: $error');
+      setState(() {
+        _isListening = true;
+        _recognizedText = '';
+      });
+
+      _speech.listen(
+        onResult: (result) {
+          setState(() {
+            _recognizedText = result.recognizedWords;
+            controller.text = _recognizedText; // Update directly
+          });
         },
       );
-
-      if (available) {
-        setState(() {
-          _isListening = true;
-          _activeController = controller;
-          _recognizedText = ''; // Clear previous text when you start listening
-        });
-
-        _speech.listen(
-          onResult: (result) {
-            // Update _recognizedText but don't update the controller here
-            setState(() {
-              _recognizedText = result.recognizedWords;
-            });
-          },
-        );
-      }
     }
   }
 
   void _stopListening() async {
     if (_isListening) {
       await _speech.stop();
-      setState(() {
-        _isListening = false;
-        _activeController?.text = _recognizedText; // Update the text field
-        _activeController = null;
-      });
+      setState(() => _isListening = false);
     }
   }
 
@@ -139,42 +120,27 @@ class _TextScreen extends ConsumerState<TextScreen> {
                                 },
                               ),
                             ),
-                            AvatarGlow(
-                              animate: _isListening &&
-                                  _activeController == ingredientsController,
-                              glowColor: Colors.blue,
-                              //endRadius: 25.0,
-                              duration: const Duration(milliseconds: 2000),
-                              //repeatPauseDuration:
-                              // const Duration(milliseconds: 100),
-                              repeat: true,
-                              child: GestureDetector(
-                                onLongPressStart: (details) {
-                                  if (_activeController ==
-                                      ingredientsController) {
-                                    _stopListening();
-                                  } else {
-                                    if (_activeController != null) {
-                                      _stopListening();
-                                    }
-                                    _startListening(ingredientsController);
-                                  }
-                                },
-                                onLongPressEnd: (details) {
+                            // Voice Input Button (No Long Press)
+                            IconButton(
+                              onPressed: () {
+                                if (_isListening) {
                                   _stopListening();
-                                },
-                                child: CircleAvatar(
-                                  backgroundColor: Colors.blue,
-                                  radius: 20.0,
-                                  child: Icon(
-                                    _isListening &&
-                                            _activeController ==
-                                                ingredientsController
-                                        ? Icons.mic
-                                        : Icons.mic_none,
-                                    color: Colors.white,
-                                    size: 24.0,
-                                  ),
+                                } else {
+                                  _startListening(ingredientsController);
+                                }
+                              },
+                              icon: AvatarGlow(
+                                animate: _isListening,
+                                glowColor: Colors.blue,
+                                //endRadius: 25.0,
+                                duration: const Duration(milliseconds: 1000),
+                                // repeatPauseDuration:
+                                // const Duration(milliseconds: 100),
+                                repeat: true,
+                                child: Icon(
+                                  _isListening ? Icons.mic : Icons.mic_none,
+                                  color: Colors.white,
+                                  size: 36.0,
                                 ),
                               ),
                             ),
