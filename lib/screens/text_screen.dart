@@ -56,7 +56,7 @@ class _TextScreen extends ConsumerState<TextScreen> {
         onResult: (result) {
           setState(() {
             _recognizedText = result.recognizedWords;
-            controller.text = _recognizedText; // Update directly
+            controller.text = _recognizedText;
           });
         },
       );
@@ -120,7 +120,6 @@ class _TextScreen extends ConsumerState<TextScreen> {
                                 },
                               ),
                             ),
-                            // Voice Input Button (No Long Press)
                             IconButton(
                               onPressed: () {
                                 if (_isListening) {
@@ -132,10 +131,7 @@ class _TextScreen extends ConsumerState<TextScreen> {
                               icon: AvatarGlow(
                                 animate: _isListening,
                                 glowColor: Colors.blue,
-                                //endRadius: 25.0,
                                 duration: const Duration(milliseconds: 1000),
-                                // repeatPauseDuration:
-                                // const Duration(milliseconds: 100),
                                 repeat: true,
                                 child: Icon(
                                   _isListening ? Icons.mic : Icons.mic_none,
@@ -145,6 +141,10 @@ class _TextScreen extends ConsumerState<TextScreen> {
                               ),
                             ),
                           ],
+                        ),
+                        Text(
+                          ingredientsController.text,
+                          style: TextStyle(fontSize: 16),
                         ),
                       ],
                     ),
