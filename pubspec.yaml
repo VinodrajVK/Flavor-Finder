@@ -39,6 +39,8 @@ dependencies:
   get: ^4.6.6
   riverpod: ^2.5.1
   flutter_riverpod: ^2.5.1
+  speech_to_text: ^6.6.1
+  avatar_glow: ^3.0.1
 
 dev_dependencies:
   flutter_test:

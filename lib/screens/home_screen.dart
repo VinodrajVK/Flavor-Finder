@@ -1,63 +1,44 @@
 import 'package:flavor_finder/screens/image_screen.dart';
 import 'package:flavor_finder/screens/text_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class HomeScreen extends ConsumerStatefulWidget {
-  const HomeScreen({super.key});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
-  ConsumerState<HomeScreen> createState() {
-    return _TabsScreenState();
-  }
+  _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _TabsScreenState extends ConsumerState<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> {
   int _selectedPageIndex = 0;
+
   void _selectPage(int index) {
     setState(() {
       _selectedPageIndex = index;
     });
   }
 
-  void _setScreen(String identifier) async {
-    Navigator.pop(context);
-    if (identifier == 'filters') {
-      await Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (ctx) => const TextScreen(),
-        ),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    Widget activePage = ImageScreen();
-    var activePageTitle = 'Dish Snap';
-    if (_selectedPageIndex == 1) {
-      //final favoriteMeals = ref.watch(favoriteMealsProvider);
-      activePage = const TextScreen();
-      activePageTitle = 'Flavor Pallete';
-    }
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          activePageTitle,
+          _selectedPageIndex == 0 ? 'Dish Snap' : 'Flavor Palette',
           style: TextStyle(
             color: Colors.black,
-            fontSize: 30,
+            fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
         ),
+        backgroundColor: Colors.green,
+        elevation: 0,
       ),
-      body: activePage,
+      body: _selectedPageIndex == 0 ? ImageScreen() : TextScreen(),
       bottomNavigationBar: BottomNavigationBar(
-        onTap: (index) {
-          _selectPage(index);
-        },
+        onTap: _selectPage,
         currentIndex: _selectedPageIndex,
+        selectedItemColor: Colors.green,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.camera),
@@ -65,7 +46,7 @@ class _TabsScreenState extends ConsumerState<HomeScreen> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.receipt_rounded),
-            label: 'Flavor Pallete',
+            label: 'Flavor Palette',
           ),
         ],
       ),

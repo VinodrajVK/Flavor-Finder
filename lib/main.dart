@@ -1,6 +1,7 @@
 import 'package:flavor_finder/screens/home_screen.dart';
-import 'package:flavor_finder/screens/recipe_result.dart';
+import 'package:flavor_finder/screens/recipe_list_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,12 +12,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: RecipeScreen(),
+      home: HomeScreen(),
     );
   }
 }
