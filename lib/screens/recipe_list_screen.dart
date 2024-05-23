@@ -30,7 +30,7 @@ class RecipeList extends StatelessWidget {
               ),
               child: InkWell(
                 borderRadius: BorderRadius.circular(10),
-                onTap: _recipeDetail(context, recipe),
+                onTap: _recipeDetail(context, recipe!),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
